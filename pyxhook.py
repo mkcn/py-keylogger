@@ -33,6 +33,11 @@
 #    Daniel Folkinshteyn <nanotube@users.sf.net>
 #    So if there are any bugs, they are probably my fault. :)
 
+#######################################################################
+#    Modified by Mirko Conti 
+#    Every changes is marked with "####" 
+#######################################################################
+
 import sys
 import os
 import re
@@ -77,7 +82,9 @@ class HookManager(threading.Thread):
         self.MouseAllButtonsDown = lambda x: True
         self.MouseAllButtonsUp = lambda x: True
         
-        self.contextEventMask = [X.KeyPress,X.MotionNotify]
+	#### removed the mouse move hook (too much CPU) 
+	#### self.contextEventMask = [X.KeyPress,X.MotionNotify]
+        self.contextEventMask = [X.KeyPress,X.ButtonPress]
         
         # Hook to our display.
         self.local_dpy = display.Display()
@@ -126,7 +133,8 @@ class HookManager(threading.Thread):
         # We don't need to do anything here anymore, since the default mask 
         # is now set to contain X.KeyPress
         #self.contextEventMask[0] = X.KeyPress
-    
+   
+    ####not used
     def HookMouse(self):
         pass
         # We don't need to do anything here anymore, since the default mask 
@@ -154,6 +162,9 @@ class HookManager(threading.Thread):
             elif event.type == X.KeyRelease:
                 hookevent = self.keyreleaseevent(event)
                 self.KeyUp(hookevent)
+                
+       		#### removed the events about the mouse
+       		'''
             elif event.type == X.ButtonPress:
                 hookevent = self.buttonpressevent(event)
                 self.MouseAllButtonsDown(hookevent)
@@ -167,6 +178,7 @@ class HookManager(threading.Thread):
                 self.mousemoveevent(event)
         
         #print "processing events...", event.type
+        '''
 
     def keypressevent(self, event):
         matchto = self.lookup_keysym(self.local_dpy.keycode_to_keysym(event.detail, 0))
@@ -208,6 +220,7 @@ class HookManager(threading.Thread):
         #self.clicky = self.rooty
         return self.makemousehookevent(event)
 
+    ####not used
     def buttonreleaseevent(self, event):
         #if (self.clickx == self.rootx) and (self.clicky == self.rooty):
             ##print "ButtonClick " + str(event.detail) + " x=" + str(self.rootx) + " y=" + str(self.rooty)
@@ -222,6 +235,7 @@ class HookManager(threading.Thread):
         #    sys.stdout.write("ButtonUp " + str(event.detail) + " x=" + str(self.rootx) + " y=" + str(self.rooty) + "\n")
         #sys.stdout.flush()
 
+	####not used
     def mousemoveevent(self, event):
         self.mouse_position_x = event.root_x
         self.mouse_position_y = event.root_y
@@ -249,6 +263,8 @@ class HookManager(threading.Thread):
             MessageName = "key up"
         return pyxhookkeyevent(storewm["handle"], storewm["name"], storewm["class"], self.lookup_keysym(keysym), self.asciivalue(keysym), False, event.detail, MessageName)
     
+    
+    ####not used
     def makemousehookevent(self, event):
         storewm = self.xwindowinfo()
         if event.detail == 1:
@@ -320,6 +336,7 @@ class pyxhookkeyevent:
     def __str__(self):
         return "Window Handle: " + str(self.Window) + "\nWindow Name: " + str(self.WindowName) + "\nWindow's Process Name: " + str(self.WindowProcName) + "\nKey Pressed: " + str(self.Key) + "\nAscii Value: " + str(self.Ascii) + "\nKeyID: " + str(self.KeyID) + "\nScanCode: " + str(self.ScanCode) + "\nMessageName: " + str(self.MessageName) + "\n"
 
+####not used
 class pyxhookmouseevent:
     """This is the class that is returned with each key event.f
     It simply creates the variables below in the class.
@@ -345,14 +362,15 @@ class pyxhookmouseevent:
 #########################END CLASS DEF#################################
 #######################################################################
     
+#### just for debug test
 if __name__ == '__main__':
     hm = HookManager()
     hm.HookKeyboard()
-    hm.HookMouse()
+    #hm.HookMouse()
     hm.KeyDown = hm.printevent
     hm.KeyUp = hm.printevent
-    hm.MouseAllButtonsDown = hm.printevent
-    hm.MouseAllButtonsUp = hm.printevent
+    #hm.MouseAllButtonsDown = hm.printevent
+    #hm.MouseAllButtonsUp = hm.printevent
     hm.start()
-    time.sleep(10)
+    time.sleep(15)
     hm.cancel()
