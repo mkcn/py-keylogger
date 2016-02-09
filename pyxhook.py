@@ -246,7 +246,8 @@ class HookManager(threading.Thread):
         for name in dir(XK):
             if name.startswith("XK_") and getattr(XK, name) == keysym:
                 return name.lstrip("XK_")
-        return "[%d]" % keysym
+        #### [ replace with { , { is less common
+        return "{%d}" % keysym
 
     def asciivalue(self, keysym):
         asciinum = XK.string_to_keysym(self.lookup_keysym(keysym))
