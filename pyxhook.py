@@ -34,9 +34,6 @@
 #    So if there are any bugs, they are probably my fault. :)
 
 #######################################################################
-#    Modified by Mirko Conti 
-#    Every changes is marked with "####" 
-#######################################################################
 
 import sys
 import os
@@ -133,16 +130,6 @@ class HookManager(threading.Thread):
         # We don't need to do anything here anymore, since the default mask 
         # is now set to contain X.KeyPress
         #self.contextEventMask[0] = X.KeyPress
-   
-    ####not used
-    def HookMouse(self):
-        pass
-        # We don't need to do anything here anymore, since the default mask 
-        # is now set to contain X.MotionNotify
-        
-        # need mouse motion to track pointer position, since ButtonPress events
-        # don't carry that info.
-        #self.contextEventMask[1] = X.MotionNotify
     
     def processevents(self, reply):
         if reply.category != record.FromServer:
@@ -162,23 +149,7 @@ class HookManager(threading.Thread):
             elif event.type == X.KeyRelease:
                 hookevent = self.keyreleaseevent(event)
                 self.KeyUp(hookevent)
-                
-       		#### removed the events about the mouse
-       		'''
-            elif event.type == X.ButtonPress:
-                hookevent = self.buttonpressevent(event)
-                self.MouseAllButtonsDown(hookevent)
-            elif event.type == X.ButtonRelease:
-                hookevent = self.buttonreleaseevent(event)
-                self.MouseAllButtonsUp(hookevent)
-            elif event.type == X.MotionNotify:
-                # use mouse moves to record mouse position, since press and release events
-                # do not give mouse position info (event.root_x and event.root_y have 
-                # bogus info).
-                self.mousemoveevent(event)
-        
-        #print "processing events...", event.type
-        '''
+               
 
     def keypressevent(self, event):
         matchto = self.lookup_keysym(self.local_dpy.keycode_to_keysym(event.detail, 0))
@@ -220,25 +191,6 @@ class HookManager(threading.Thread):
         #self.clicky = self.rooty
         return self.makemousehookevent(event)
 
-    ####not used
-    def buttonreleaseevent(self, event):
-        #if (self.clickx == self.rootx) and (self.clicky == self.rooty):
-            ##print "ButtonClick " + str(event.detail) + " x=" + str(self.rootx) + " y=" + str(self.rooty)
-            #if (event.detail == 1) or (event.detail == 2) or (event.detail == 3):
-                #self.captureclick()
-        #else:
-            #pass
-        
-        return self.makemousehookevent(event)
-        
-        #    sys.stdout.write("ButtonDown " + str(event.detail) + " x=" + str(self.clickx) + " y=" + str(self.clicky) + "\n")
-        #    sys.stdout.write("ButtonUp " + str(event.detail) + " x=" + str(self.rootx) + " y=" + str(self.rooty) + "\n")
-        #sys.stdout.flush()
-
-	####not used
-    def mousemoveevent(self, event):
-        self.mouse_position_x = event.root_x
-        self.mouse_position_y = event.root_y
 
     # need the following because XK.keysym_to_string() only does printable chars
     # rather than being the correct inverse of XK.string_to_keysym()
@@ -246,7 +198,6 @@ class HookManager(threading.Thread):
         for name in dir(XK):
             if name.startswith("XK_") and getattr(XK, name) == keysym:
                 return name.lstrip("XK_")
-        #### [ replace with { , { is less common
         return "{%d}" % keysym
 
     def asciivalue(self, keysym):
@@ -263,29 +214,6 @@ class HookManager(threading.Thread):
         elif event.type == X.KeyRelease:
             MessageName = "key up"
         return pyxhookkeyevent(storewm["handle"], storewm["name"], storewm["class"], self.lookup_keysym(keysym), self.asciivalue(keysym), False, event.detail, MessageName)
-    
-    
-    ####not used
-    def makemousehookevent(self, event):
-        storewm = self.xwindowinfo()
-        if event.detail == 1:
-            MessageName = "mouse left "
-        elif event.detail == 3:
-            MessageName = "mouse right "
-        elif event.detail == 2:
-            MessageName = "mouse middle "
-        elif event.detail == 5:
-            MessageName = "mouse wheel down "
-        elif event.detail == 4:
-            MessageName = "mouse wheel up "
-        else:
-            MessageName = "mouse " + str(event.detail) + " "
-
-        if event.type == X.ButtonPress:
-            MessageName = MessageName + "down"
-        elif event.type == X.ButtonRelease:
-            MessageName = MessageName + "up"
-        return pyxhookmouseevent(storewm["handle"], storewm["name"], storewm["class"], (self.mouse_position_x, self.mouse_position_y), MessageName)
     
     def xwindowinfo(self):
         try:
@@ -337,27 +265,6 @@ class pyxhookkeyevent:
     def __str__(self):
         return "Window Handle: " + str(self.Window) + "\nWindow Name: " + str(self.WindowName) + "\nWindow's Process Name: " + str(self.WindowProcName) + "\nKey Pressed: " + str(self.Key) + "\nAscii Value: " + str(self.Ascii) + "\nKeyID: " + str(self.KeyID) + "\nScanCode: " + str(self.ScanCode) + "\nMessageName: " + str(self.MessageName) + "\n"
 
-####not used
-class pyxhookmouseevent:
-    """This is the class that is returned with each key event.f
-    It simply creates the variables below in the class.
-    
-    Window = The handle of the window.
-    WindowName = The name of the window.
-    WindowProcName = The backend process for the window.
-    Position = 2-tuple (x,y) coordinates of the mouse click
-    MessageName = "mouse left|right|middle down", "mouse left|right|middle up".
-    """
-    
-    def __init__(self, Window, WindowName, WindowProcName, Position, MessageName):
-        self.Window = Window
-        self.WindowName = WindowName
-        self.WindowProcName = WindowProcName
-        self.Position = Position
-        self.MessageName = MessageName
-    
-    def __str__(self):
-        return "Window Handle: " + str(self.Window) + "\nWindow Name: " + str(self.WindowName) + "\nWindow's Process Name: " + str(self.WindowProcName) + "\nPosition: " + str(self.Position) + "\nMessageName: " + str(self.MessageName) + "\n"
 
 #######################################################################
 #########################END CLASS DEF#################################
@@ -367,11 +274,8 @@ class pyxhookmouseevent:
 if __name__ == '__main__':
     hm = HookManager()
     hm.HookKeyboard()
-    #hm.HookMouse()
     hm.KeyDown = hm.printevent
     hm.KeyUp = hm.printevent
-    #hm.MouseAllButtonsDown = hm.printevent
-    #hm.MouseAllButtonsUp = hm.printevent
     hm.start()
     time.sleep(15)
     hm.cancel()

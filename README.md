@@ -1,12 +1,11 @@
 # Py-keylogger
 
-<p>A Simple Keylogger for Linux application written in Python 
-using the pyxhook module which is an implementation of pyhook module (for Windows OS). </p>
+<p>A Simple Keylogger for Linux written in Python using the pyxhook module which is an implementation of pyhook module (for Windows OS). </p>
 
 <h3>Changes:</h3>
 
 + reduced CPU utilization ( removed "mouse move" hook )
-+ organized output (group with the same "window name" and "process name" plus time).
++ organized output (grouped chars with the same "window context", showing the process name and the time).
 
 ```
 	---------------------------------------------------------------------------
@@ -20,36 +19,41 @@ using the pyxhook module which is an implementation of pyhook module (for Window
 	 space c o d e space Shift_L percent space 2 Control_L
 ```
 
-<h3>Requires:</h3> 
+<h3>Requirements:</h3> 
 
 + python 2.7
 + python-xlib
 
-<h2>Installation ubuntu:</h2>
+<h2>Installation:</h2>
 <h6>Get the code</h6>
 
 ```
 git clone https://github.com/mkcn/py-keylogger.git
 ```
-<h6>Go in the directory</h6>
+<h6>Set the directory</h6>
 
 ```
 cd py-keylogger
 ```
-<h6>If need change the name of the log file (relative path or absolute path) in the "py-keylogger.py" file</h6>
+<p>Default log file: file.log (set in "kl.py")</p>
 
 <h6>Run the keylogger</h6>
 
 ```
-python keylogger.py 
+python kl.py 
 ```
-<h6>Auto start , manually go in "Startup applications" → "Add"</h6>
+<h6>Run in background</h6>
+```
+nohup python kl.py -r > output &
+```
+
+<h6>Auto start (Ubuntu)</h6>
+<p>"Startup applications" → "Add"</p>
 
 + name 	: "py-key"
-+ Command : "python ~/py-keylogger/py-keylogger.py"
-
-			
++ Command : "python ~/py-keylogger/kl.py"
++ Exit : 'Control_L'  then '+' to exit
+			        
             
-            
-<h2>Installation original project:</h2><a href="http://www.techinfected.net/2015/10/how-to-make-simple-basic-keylogger-in-python-for-linux.html">Visit this LINK</a>
+<h2>Credits:</h2>Visit the <a href="https://github.com/hiamandeep/py-keylogger.git">original project</a>
 
