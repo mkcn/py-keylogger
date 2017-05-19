@@ -43,6 +43,7 @@ cd py-keylogger
 python kl.py 
 ```
 <h6>Run in background</h6>
+
 ```
 nohup python kl.py -r > output &
 ```
@@ -55,5 +56,5 @@ nohup python kl.py -r > output &
 + Exit : 'Control_L'  then '+' to exit
 			        
             
-<h2>Credits:</h2>Visit the <a href="https://github.com/hiamandeep/py-keylogger.git">original project</a>
+<h2>Credits:</h2>Visit the <a target="_blank" href="https://github.com/hiamandeep/py-keylogger.git">original project</a>
 
